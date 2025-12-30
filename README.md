@@ -441,7 +441,7 @@ use MustafaFares\SelectiveResponse\Http\Resources\BaseApiResource;
 ## Requirements
 
 - PHP 8.1+
-- Laravel 10.0+ or 11.0+
+- Laravel 10.0+, 11.0+, or 12.0+
 - (Optional) Scramble 1.0+ for documentation extension
 - (Optional) PHP Parser 5.0+ for Scramble extension
 
