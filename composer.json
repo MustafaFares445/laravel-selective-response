@@ -1,0 +1,58 @@
+{
+    "name": "mustafafares/laravel-selective-response",
+    "description": "Automatic API resource filtering based on model select() queries with optional Scramble documentation support",
+    "type": "library",
+    "keywords": [
+        "laravel",
+        "api",
+        "resource",
+        "selective",
+        "filtering",
+        "scramble"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Your Name",
+            "email": "your.email@example.com"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "illuminate/support": "^10.0|^11.0",
+        "illuminate/http": "^10.0|^11.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^8.0|^9.0",
+        "phpunit/phpunit": "^10.0|^11.0",
+        "pestphp/pest": "^2.0"
+    },
+    "suggest": {
+        "dedoc/scramble": "^1.0",
+        "nikic/php-parser": "^5.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "MustafaFares\\SelectiveResponse\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MustafaFares\\SelectiveResponse\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "MustafaFares\\SelectiveResponse\\SelectiveResponseServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}
