@@ -17,6 +17,10 @@ trait SelectiveResponse
 
         $filteredData = [];
         foreach ($data as $key => $value) {
+            if ($value instanceof \MustafaFares\SelectiveResponse\Http\Resources\MissingAttribute) {
+                continue;
+            }
+            
             if (in_array($key, $loadedAttributes) || $this->shouldIncludeKey($key, $value)) {
                 $filteredData[$key] = $value;
             }

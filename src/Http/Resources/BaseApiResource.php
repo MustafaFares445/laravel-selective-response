@@ -3,6 +3,7 @@
 namespace MustafaFares\SelectiveResponse\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use MustafaFares\SelectiveResponse\Http\Resources\MissingAttribute;
 use MustafaFares\SelectiveResponse\Traits\SelectiveResponse;
 
 class BaseApiResource extends JsonResource
@@ -11,6 +12,34 @@ class BaseApiResource extends JsonResource
 
     protected $useSelectiveResponse = true;
     protected $alwaysInclude = [];
+
+    public function __get($key)
+    {
+        if ($this->resource && method_exists($this->resource, 'getAttributes')) {
+            $attributes = $this->resource->getAttributes();
+            
+            if (!array_key_exists($key, $attributes)) {
+                if (method_exists($this->resource, 'hasGetMutator') && $this->resource->hasGetMutator($key)) {
+                    return parent::__get($key);
+                }
+                
+                if (method_exists($this->resource, 'relationLoaded') && $this->resource->relationLoaded($key)) {
+                    return parent::__get($key);
+                }
+                
+                try {
+                    return parent::__get($key);
+                } catch (\Exception $e) {
+                    if (str_contains($e->getMessage(), 'does not exist or was not retrieved')) {
+                        return new MissingAttribute();
+                    }
+                    throw $e;
+                }
+            }
+        }
+
+        return parent::__get($key);
+    }
 
     public function resolve($request = null)
     {

@@ -38,7 +38,7 @@ class BaseApiResourceTest extends TestCase
             }
         };
 
-        $data = $resource->toArray(new Request());
+        $data = $resource->resolve(new Request());
 
         $this->assertArrayHasKey('id', $data);
         $this->assertArrayHasKey('name', $data);
@@ -179,6 +179,60 @@ class BaseApiResourceTest extends TestCase
         $this->assertArrayHasKey('id', $data);
         $this->assertArrayHasKey('name', $data);
         $this->assertArrayHasKey('email', $data);
+    }
+
+    public function test_handles_missing_attributes_gracefully()
+    {
+        $model = new class {
+            public $id = 1;
+            public $name = 'John';
+
+            public function getAttributes()
+            {
+                return [
+                    'id' => $this->id,
+                    'name' => $this->name,
+                ];
+            }
+
+            public function __get($key)
+            {
+                $attributes = $this->getAttributes();
+                if (!array_key_exists($key, $attributes)) {
+                    throw new \Exception("The attribute [{$key}] either does not exist or was not retrieved for model [App\\Models\\User].");
+                }
+                return $attributes[$key];
+            }
+
+            public function hasGetMutator($key)
+            {
+                return false;
+            }
+
+            public function relationLoaded($key)
+            {
+                return false;
+            }
+        };
+
+        $resource = new class($model) extends BaseApiResource {
+            public function toArray($request)
+            {
+                return [
+                    'id' => $this->id,
+                    'name' => $this->name,
+                    'email' => $this->email,
+                    'phoneNumber' => $this->phone_number ?? null,
+                ];
+            }
+        };
+
+        $resolved = $resource->resolve(new Request());
+
+        $this->assertArrayHasKey('id', $resolved);
+        $this->assertArrayHasKey('name', $resolved);
+        $this->assertArrayNotHasKey('email', $resolved);
+        $this->assertArrayNotHasKey('phoneNumber', $resolved);
     }
 }
 
