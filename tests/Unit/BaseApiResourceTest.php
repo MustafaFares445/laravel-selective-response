@@ -287,6 +287,13 @@ class BaseApiResourceTest extends TestCase
         $this->assertArrayHasKey('name', $resolved);
         $this->assertArrayNotHasKey('createdAt', $resolved);
         $this->assertArrayNotHasKey('updatedAt', $resolved);
+        
+        $json = json_encode($resolved);
+        $decoded = json_decode($json, true);
+        $this->assertArrayNotHasKey('createdAt', $decoded);
+        $this->assertArrayNotHasKey('updatedAt', $decoded);
+        $this->assertStringNotContainsString('createdAt', $json);
+        $this->assertStringNotContainsString('updatedAt', $json);
     }
 }
 

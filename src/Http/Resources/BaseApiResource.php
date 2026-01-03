@@ -58,11 +58,35 @@ class BaseApiResource extends JsonResource
 
         foreach ($this->alwaysInclude as $attr) {
             if (isset($data[$attr]) && !isset($filtered[$attr])) {
-                $filtered[$attr] = $data[$attr];
+                $value = $data[$attr];
+                if (!($value instanceof MissingAttribute)) {
+                    $filtered[$attr] = $value;
+                }
             }
         }
 
-        return $filtered;
+        return $this->cleanMissingAttributes($filtered);
+    }
+
+    protected function cleanMissingAttributes(array $data): array
+    {
+        $cleaned = [];
+        foreach ($data as $key => $value) {
+            if ($value instanceof MissingAttribute) {
+                continue;
+            }
+            
+            if (is_array($value)) {
+                $value = $this->cleanMissingAttributes($value);
+                if (empty($value)) {
+                    continue;
+                }
+            }
+            
+            $cleaned[$key] = $value;
+        }
+        
+        return $cleaned;
     }
 
     public function withoutSelectiveFiltering(): self
