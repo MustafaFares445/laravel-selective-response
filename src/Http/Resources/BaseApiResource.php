@@ -2,6 +2,7 @@
 
 namespace MustafaFares\SelectiveResponse\Http\Resources;
 
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use MustafaFares\SelectiveResponse\Http\Resources\MissingAttribute;
 use MustafaFares\SelectiveResponse\Traits\SelectiveResponse;
