@@ -234,5 +234,59 @@ class BaseApiResourceTest extends TestCase
         $this->assertArrayNotHasKey('email', $resolved);
         $this->assertArrayNotHasKey('phoneNumber', $resolved);
     }
+
+    public function test_handles_method_calls_on_missing_attributes()
+    {
+        $model = new class {
+            public $id = 1;
+            public $name = 'John';
+
+            public function getAttributes()
+            {
+                return [
+                    'id' => $this->id,
+                    'name' => $this->name,
+                ];
+            }
+
+            public function __get($key)
+            {
+                $attributes = $this->getAttributes();
+                if (!array_key_exists($key, $attributes)) {
+                    throw new \Exception("The attribute [{$key}] either does not exist or was not retrieved for model [App\\Models\\User].");
+                }
+                return $attributes[$key];
+            }
+
+            public function hasGetMutator($key)
+            {
+                return false;
+            }
+
+            public function relationLoaded($key)
+            {
+                return false;
+            }
+        };
+
+        $resource = new class($model) extends BaseApiResource {
+            public function toArray($request)
+            {
+                return [
+                    'id' => $this->id,
+                    'name' => $this->name,
+                    'createdAt' => $this->created_at->toDateTimeString(),
+                    'updatedAt' => $this->updated_at->toDateTimeString(),
+                ];
+            }
+        };
+
+        $resolved = $resource->resolve(new Request());
+
+        $this->assertArrayHasKey('id', $resolved);
+        $this->assertArrayHasKey('name', $resolved);
+        $this->assertArrayNotHasKey('createdAt', $resolved);
+        $this->assertArrayNotHasKey('updatedAt', $resolved);
+    }
 }
 
