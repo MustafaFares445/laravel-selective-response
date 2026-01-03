@@ -41,6 +41,17 @@ class BaseApiResource extends JsonResource
         return parent::__get($key);
     }
 
+    public function toArray($request)
+    {
+        $data = parent::toArray($request);
+        
+        if ($this->useSelectiveResponse && $this->resource && is_array($data)) {
+            $data = $this->applySelectiveFiltering($data);
+        }
+        
+        return $data;
+    }
+
     public function resolve($request = null)
     {
         $data = parent::resolve($request);

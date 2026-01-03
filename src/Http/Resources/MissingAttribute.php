@@ -2,7 +2,9 @@
 
 namespace MustafaFares\SelectiveResponse\Http\Resources;
 
-class MissingAttribute
+use JsonSerializable;
+
+class MissingAttribute implements JsonSerializable
 {
     public function __call($method, $arguments)
     {
@@ -12,6 +14,11 @@ class MissingAttribute
     public function __toString(): string
     {
         return '';
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return null;
     }
 }
 
