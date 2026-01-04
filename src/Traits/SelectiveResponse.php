@@ -23,7 +23,16 @@ trait SelectiveResponse
             
             $value = $this->removeMissingAttributes($value);
             
-            if (in_array($key, $loadedAttributes) || $this->shouldIncludeKey($key, $value)) {
+            // Filter out null values for keys that aren't in loaded attributes
+            // This handles cases where MissingAttribute was converted to null
+            if ($value === null && !in_array($key, $loadedAttributes)) {
+                continue;
+            }
+            
+            // Only include keys that are in the loaded/selected attributes
+            if (in_array($key, $loadedAttributes)) {
+                $filteredData[$key] = $value;
+            } elseif ($this->shouldIncludeKey($key, $value)) {
                 $filteredData[$key] = $value;
             }
         }

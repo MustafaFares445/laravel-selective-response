@@ -39,10 +39,10 @@ class BaseApiResource extends JsonResource
             }
         }
 
-        return parent::__get($key);
+        return parent::__get($key); 
     }
 
-    public function toArray($request)
+    public function toArray(Request $request): array
     {
         $data = parent::toArray($request);
         
@@ -83,8 +83,18 @@ class BaseApiResource extends JsonResource
     protected function cleanMissingAttributes(array $data): array
     {
         $cleaned = [];
+        $loadedAttributes = $this->resource && method_exists($this->resource, 'getAttributes')
+            ? array_keys($this->resource->getAttributes())
+            : [];
+        
         foreach ($data as $key => $value) {
             if ($value instanceof MissingAttribute) {
+                continue;
+            }
+            
+            // Filter out null values for keys that aren't in loaded attributes
+            // This provides a second layer of filtering to catch any null values that slip through
+            if ($value === null && !empty($loadedAttributes) && !in_array($key, $loadedAttributes)) {
                 continue;
             }
             
